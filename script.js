@@ -61,10 +61,93 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+const addTransactions = function (transactions) {
+  containerMovements.innerHTML = '';
+  transactions.movements.forEach((element, i) => {
+    const type = element > 0 ? 'deposit' : 'withdraw';
+    const html = `
+        <div class="movements__row">
+          <div class="movements__type movements__type--deposit"> ${
+            i + 1
+          } ${type}</div>
+           <div class="movements__date">3 days ago</div>
+          <div class="movements__value">${element}₹</div>
+        </div>`;
+    // console.log(html);
+    containerMovements.insertAdjacentHTML('afterbegin', html);
+  });
+};
+addTransactions(account1);
+const createUsername = function (accs) {
+  accs.forEach(acc => {
+    acc.username = acc.owner
+      .toLowerCase()
+      .split(' ')
+      .map(word => word[0])
+      .join('');
+  });
+};
+createUsername(accounts);
+const calculateBalance = function (acc) {
+  const totalBalance = acc.movements.reduce((acc, curr) => acc + curr, 0);
+  labelBalance.textContent = `${totalBalance}₹`;
+};
+calculateBalance(account1);
+// console.log(accounts);
+
 /////////////////////////////////////////////////
 /////////////////////////////////////////////////
 // LECTURES
-
+// const dogsJulia = [3, 5, 2, 12, 7];
+// const dogsKate = [4, 1, 15, 8, 3];
+// const checkDogs = function (dogsJulia, dogsKate) {
+//   const correctedDogsJulia = [...dogsJulia];
+//   // correctedDogsJulia[0] = 9;
+//   correctedDogsJulia.splice(0, 1);
+//   correctedDogsJulia.splice(
+//     correctedDogsJulia.length - 2,
+//     correctedDogsJulia.length
+//   );
+//   // console.log(correctedDogsJulia);
+//   const both = [...correctedDogsJulia, ...dogsKate];
+//   both.forEach((ele, idx) =>
+//     console.log(
+//       `Dog number ${idx + 1} is ${
+//         ele > 3 ? `an adult, and is ${ele} years old` : 'still a puppy'
+//       }`
+//     )
+//   );
+// };
+// checkDogs(dogsJulia, dogsKate);
+// console.log(dogsJulia);
+// const calcAverageHumanAge = function (dogsAges) {
+//   const humanAge = dogsAges
+//     .map(age => (age <= 2 ? age * 2 : age * 4 + 16))
+//     .filter(age => age >= 18)
+//     .reduce((accu, curr, i, arr) => accu + curr / arr.length, 0);
+//   console.log(humanAge);
+// };
+// const data1 = [5, 2, 4, 1, 15, 8, 3];
+// const data2 = [16, 6, 10, 5, 6, 1, 4];
+// calcAverageHumanAge(data1);
+// calcAverageHumanAge(data2);
+// const calculateSummary = function (acc) {
+//   const income = acc.movements
+//     .filter(mov => mov > 0)
+//     .reduce((accu, curr) => accu + curr);
+//   labelSumIn.textContent = `${income}₹`;
+//   const out = acc.movements
+//     .filter(mov => mov < 0)
+//     .reduce((accu, curr) => accu + curr);
+//   labelSumOut.textContent = `${Math.abs(out)}₹`;
+//   const interest = acc.movements
+//     .filter(mov => mov > 0)
+//     .map(mov => (mov * 1.2) / 100)
+//     .filter(int => int > 1)
+//     .reduce((accu, curr) => accu + curr);
+//   labelSumInterest.textContent = `${Math.abs(interest)}₹`;
+// };
+calculateSummary(account1);
 const currencies = new Map([
   ['USD', 'United States dollar'],
   ['EUR', 'Euro'],
