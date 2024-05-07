@@ -77,7 +77,7 @@ const addTransactions = function (transactions) {
     containerMovements.insertAdjacentHTML('afterbegin', html);
   });
 };
-addTransactions(account1);
+// addTransactions(account1);
 const createUsername = function (accs) {
   accs.forEach(acc => {
     acc.username = acc.owner
@@ -92,7 +92,7 @@ const calculateBalance = function (acc) {
   const totalBalance = acc.movements.reduce((acc, curr) => acc + curr, 0);
   labelBalance.textContent = `${totalBalance}₹`;
 };
-calculateBalance(account1);
+// calculateBalance(account1);
 // console.log(accounts);
 
 /////////////////////////////////////////////////
@@ -131,23 +131,69 @@ calculateBalance(account1);
 // const data2 = [16, 6, 10, 5, 6, 1, 4];
 // calcAverageHumanAge(data1);
 // calcAverageHumanAge(data2);
-// const calculateSummary = function (acc) {
-//   const income = acc.movements
-//     .filter(mov => mov > 0)
-//     .reduce((accu, curr) => accu + curr);
-//   labelSumIn.textContent = `${income}₹`;
-//   const out = acc.movements
-//     .filter(mov => mov < 0)
-//     .reduce((accu, curr) => accu + curr);
-//   labelSumOut.textContent = `${Math.abs(out)}₹`;
-//   const interest = acc.movements
-//     .filter(mov => mov > 0)
-//     .map(mov => (mov * 1.2) / 100)
-//     .filter(int => int > 1)
-//     .reduce((accu, curr) => accu + curr);
-//   labelSumInterest.textContent = `${Math.abs(interest)}₹`;
-// };
-calculateSummary(account1);
+const calculateSummary = function (acc) {
+  const income = acc.movements
+    .filter(mov => mov > 0)
+    .reduce((accu, curr) => accu + curr);
+  labelSumIn.textContent = `${income}₹`;
+  const out = acc.movements
+    .filter(mov => mov < 0)
+    .reduce((accu, curr) => accu + curr);
+  labelSumOut.textContent = `${Math.abs(out)}₹`;
+  const interest = acc.movements
+    .filter(mov => mov > 0)
+    .map(mov => (mov * acc.interestRate) / 100)
+    .filter(int => int > 1)
+    .reduce((accu, curr) => accu + curr);
+  labelSumInterest.textContent = `${Math.abs(interest)}₹`;
+};
+// calculateSummary(account1);
+// console.log(accounts);
+let currentAcc;
+btnLogin.addEventListener('click', e => {
+  e.preventDefault();
+  const acc = accounts.find(
+    uname =>
+      uname.username === inputLoginUsername.value &&
+      uname.pin === Number(inputLoginPin.value)
+  );
+  currentAcc = acc;
+  if (acc) {
+    containerApp.style.opacity = 100;
+    calculateSummary(acc);
+    addTransactions(acc);
+    calculateBalance(acc);
+    inputLoginPin.value = '';
+    inputLoginUsername.value = '';
+    inputLoginPin.blur();
+    labelWelcome.textContent = `Welcome Back, ${acc.owner}`;
+  }
+});
+const updateUI = function (acc) {
+  calculateSummary(acc);
+  addTransactions(acc);
+  calculateBalance(acc);
+};
+btnTransfer.addEventListener('click', e => {
+  e.preventDefault();
+  const uNameToTransfer = inputTransferTo.value;
+  const ammountToTransfer = Number(inputTransferAmount.value);
+  const accToTransfer = accounts.find(acc => acc.username === uNameToTransfer);
+  if (
+    uNameToTransfer &&
+    ammountToTransfer > 0 &&
+    uNameToTransfer !== currentAcc.username &&
+    accToTransfer
+  ) {
+    currentAcc.movements.push(-1 * ammountToTransfer);
+    accToTransfer.movements.push(ammountToTransfer);
+  }
+  updateUI(currentAcc);
+  inputTransferTo.value = '';
+  inputTransferAmount.value = '';
+  inputTransferAmount.blur();
+  inputTransferTo.blur();
+});
 const currencies = new Map([
   ['USD', 'United States dollar'],
   ['EUR', 'Euro'],
